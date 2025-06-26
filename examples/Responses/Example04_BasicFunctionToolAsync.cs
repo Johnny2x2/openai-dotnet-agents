@@ -11,6 +11,21 @@ namespace OpenAI.Examples;
 
 public partial class ResponseExamples
 {
+    public class InstanceTools
+    {
+        public static string GetCurrentLocation()
+        {
+            // Call the location API here.
+            return "San Francisco";
+        }
+
+        public static string GetCurrentWeather(string location, string unit = "celsius")
+        {
+            // Call the weather API here.
+            return $"31 {unit}";
+        }
+    }
+
     [Test]
     public async Task Example04_BasicFunctionTool()
     {
@@ -18,42 +33,17 @@ public partial class ResponseExamples
 
         List<ResponseItem> messages = [ResponseItem.CreateUserMessageItem("What's the weather in boston today?"),];
 
-        ResponseTool getCurrentWeatherTool = ResponseTool.CreateFunctionTool(
-                functionName: nameof(GetCurrentWeather),
-                functionDescription: "Get the current weather in a given location",
-                functionParameters: BinaryData.FromBytes("""
-                    {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The city and state, e.g. Boston, MA"
-                            },
-                            "unit": {
-                                "type": "string",
-                                "enum": [ "celsius", "fahrenheit" ],
-                                "description": "The temperature unit to use. Infer this from the specified location."
-                            }
-                        },
-                        "required": [ "location" ]
-                    }
-                    """u8.ToArray())
-            );
-        ResponseTool getCurrentLocationTool = ResponseTool.CreateFunctionTool(
-                        functionName: nameof(GetCurrentLocation),
-                        functionDescription: "Get the user's current location", functionParameters: BinaryData.FromBytes("""
-                    {
-                        "type": "object",
-                        "properties": {}
-                    }
-                    """u8.ToArray())
-                    );
+        ResponseTools tools = new ResponseTools();
+
+        tools.AddFunctionTools([typeof(InstanceTools),]);
 
         OpenAIResponse response;
         ResponseCreationOptions options = new ResponseCreationOptions();
 
-        options.Tools.Add(getCurrentWeatherTool);
-        options.Tools.Add(getCurrentLocationTool);
+        foreach (var item in tools.Tools)
+        {
+            options.Tools.Add(item);
+        }
 
         bool requiresAction = false;
 
@@ -78,44 +68,9 @@ public partial class ResponseExamples
                 else if (item is FunctionCallResponseItem toolCall)
                 {
                     messages.Add(toolCall);
-                    
-                    switch (toolCall.FunctionName)
-                    {
-                        case nameof(GetCurrentLocation):
-                            {
-                                string toolResult = GetCurrentLocation();
-                                messages.Add(ResponseItem.CreateFunctionCallOutputItem(toolCall.CallId, toolResult));
-                                break;
-                            }
 
-                        case nameof(GetCurrentWeather):
-                            {
-                                // The arguments that the model wants to use to call the function are specified as a
-                                // stringified JSON object based on the schema defined in the tool definition. Note that
-                                // the model may hallucinate arguments too. Consequently, it is important to do the
-                                // appropriate parsing and validation before calling the function.
-                                using JsonDocument argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                                bool hasLocation = argumentsJson.RootElement.TryGetProperty("location", out JsonElement location);
-                                bool hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out JsonElement unit);
-
-                                if (!hasLocation)
-                                {
-                                    throw new ArgumentNullException(nameof(location), "The location argument is required.");
-                                }
-
-                                string toolResult = hasUnit
-                                    ? GetCurrentWeather(location.GetString(), unit.GetString())
-                                    : GetCurrentWeather(location.GetString());
-                                messages.Add(ResponseItem.CreateFunctionCallOutputItem(toolCall.CallId, toolResult)); ;
-                                break;
-                            }
-
-                        default:
-                            {
-                                // Handle other unexpected calls.
-                                throw new NotImplementedException();
-                            }
-                    }
+                    FunctionCallOutputResponseItem functionOutputResponse = await tools.CallAsync(toolCall);
+                    messages.Add(functionOutputResponse);
 
                     requiresAction = true;
                 }
@@ -125,16 +80,6 @@ public partial class ResponseExamples
         
     }
 
-    private static string GetCurrentLocation()
-    {
-        // Call the location API here.
-        return "San Francisco";
-    }
-
-    private static string GetCurrentWeather(string location, string unit = "celsius")
-    {
-        // Call the weather API here.
-        return $"31 {unit}";
-    }
+    
 }
 
