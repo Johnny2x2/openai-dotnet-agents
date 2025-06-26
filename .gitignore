@@ -181,3 +181,4 @@ TempTypeSpecFiles/
 # Artifacts from the generator
 tspCodeModel.json
 Configuration.json
+/testEnvironments.json
