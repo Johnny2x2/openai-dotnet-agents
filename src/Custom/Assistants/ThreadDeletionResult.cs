@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.ClientModel;
+using System.ClientModel.Primitives;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace OpenAI.Assistants;
 
-[Experimental("OPENAI001")]
 [CodeGenType("DeleteThreadResponse")]
 public partial class ThreadDeletionResult
 {
@@ -13,5 +15,12 @@ public partial class ThreadDeletionResult
     // CUSTOM: Made internal.
     /// <summary> The object type, which is always `thread.deleted`. </summary>
     [CodeGenMember("Object")]
-    internal InternalDeleteThreadResponseObject Object { get; } = InternalDeleteThreadResponseObject.ThreadDeleted;
+    internal string Object { get; } = "thread.deleted";
+
+    internal static ThreadDeletionResult FromClientResult(ClientResult result)
+    {
+        using PipelineResponse response = result.GetRawResponse();
+        using JsonDocument document = JsonDocument.Parse(response.Content);
+        return DeserializeThreadDeletionResult(document.RootElement, ModelSerializationExtensions.WireOptions);
+    }
 }

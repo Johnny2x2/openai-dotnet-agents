@@ -1,10 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.VectorStores;
 
 // CUSTOM: Renamed.
-[Experimental("OPENAI001")]
-[CodeGenType("ListVectorStoresRequestOrder")]
+[CodeGenType("PageOrderOptions")]
 public readonly partial struct VectorStoreCollectionOrder
 {
     // CUSTOM: Renamed.

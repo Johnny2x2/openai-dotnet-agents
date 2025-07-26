@@ -1,8 +1,12 @@
-﻿using System;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Responses;
 
-[CodeGenType("ResponsesTextFormat")]
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ResponseTextFormatConfiguration")]
 public partial class ResponseTextFormat
 {
     // CUSTOM: Renamed to "Kind" and converted to public enum from internal extensible type.
@@ -26,9 +30,9 @@ public partial class ResponseTextFormat
          return new InternalResponsesTextFormatJsonSchema(
             InternalResponsesTextFormatType.JsonSchema,
             additionalBinaryDataProperties: null,
-            jsonSchemaFormatName,
-            jsonSchema,
-            jsonSchemaFormatDescription,
-            jsonSchemaIsStrict);
+            description: jsonSchemaFormatDescription,
+            name: jsonSchemaFormatName,
+            strict: jsonSchemaIsStrict,
+            schema: jsonSchema);
     }
 }

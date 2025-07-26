@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace OpenAI.Assistants;
 
-[Experimental("OPENAI001")]
 [CodeGenType("ToolResourcesFileSearchVectorStore")]
 public partial class VectorStoreCreationHelper
 {
@@ -14,12 +13,10 @@ public partial class VectorStoreCreationHelper
     public FileChunkingStrategy ChunkingStrategy { get; set; }
 
     public VectorStoreCreationHelper(IEnumerable<string> fileIds)
-    {
-        FileIds = fileIds.ToList();
-        Metadata = new ChangeTrackingDictionary<string, string>();
-    }
+        : this(fileIds?.ToList(), null, null, null)
+    { }
 
     public VectorStoreCreationHelper(IEnumerable<OpenAIFile> files)
-        : this(files?.Select(file => file.Id) ?? [])
+        : this(files?.Select(file => file.Id).ToList() ?? [], null, null, null)
     { }
 }

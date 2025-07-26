@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Chat;
 
+// CUSTOM: Added Experimental attribute.
 /// <summary>
 /// Represents an ID-based reference to a past audio output as received from a prior chat completion response, as
 /// provided when creating an <see cref="AssistantChatMessage"/> instance for use in a conversation history.

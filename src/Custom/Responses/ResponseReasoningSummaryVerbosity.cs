@@ -1,6 +1,11 @@
-﻿namespace OpenAI.Responses;
+using System.Diagnostics.CodeAnalysis;
 
-[CodeGenType("ResponsesReasoningConfigurationGenerateSummary")]
+namespace OpenAI.Responses;
+
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ReasoningSummary")]
 public readonly partial struct ResponseReasoningSummaryVerbosity
 {
 }

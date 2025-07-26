@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Chat;
 
+// CUSTOM: Added Experimental attribute.
 /// <summary>
 /// Represents the configuration details for output audio requested in a chat completion request.
 /// </summary>
@@ -12,6 +11,7 @@ namespace OpenAI.Chat;
 /// the request's specified content modalities will be automatically updated to reflect desired audio output.
 /// </remarks>
 [CodeGenType("CreateChatCompletionRequestAudio1")]
+[CodeGenVisibility(nameof(ChatAudioOptions), CodeGenVisibility.Internal)]
 public partial class ChatAudioOptions
 {
     // CUSTOM: Renamed.

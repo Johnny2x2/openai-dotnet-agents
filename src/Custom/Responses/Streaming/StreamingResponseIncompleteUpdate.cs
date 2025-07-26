@@ -1,5 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OpenAI.Responses;
 
-[CodeGenType("ResponsesResponseStreamEventResponseIncomplete")]
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ResponseIncompleteEvent")]
 public partial class StreamingResponseIncompleteUpdate
-{ }
+{
+}

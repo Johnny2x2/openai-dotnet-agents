@@ -1,7 +1,9 @@
 namespace OpenAI.Chat;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
+// CUSTOM: Added Experimental attribute.
 /// <summary>
 /// Represents an audio update in a streaming chat response.
 /// </summary>

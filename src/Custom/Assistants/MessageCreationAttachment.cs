@@ -6,7 +6,6 @@ using System.Text.Json;
 
 namespace OpenAI.Assistants;
 
-[Experimental("OPENAI001")]
 [CodeGenType("CreateMessageRequestAttachment")]
 [CodeGenSerialization(nameof(Tools), "tools", SerializationValueHook = nameof(SerializeTools), DeserializationValueHook = nameof(DeserializeTools))]
 public partial class MessageCreationAttachment
@@ -24,7 +23,7 @@ public partial class MessageCreationAttachment
     /// </code>
     /// </remarks>
     [CodeGenMember("Tools")]
-    public IReadOnlyList<ToolDefinition> Tools { get; } = new ChangeTrackingList<ToolDefinition>();
+    public IReadOnlyList<ToolDefinition> Tools { get; }
 
     private void SerializeTools(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         => writer.WriteObjectValue(Tools, options);

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Chat;
 
+// CUSTOM: Added Experimental attribute.
 [CodeGenType("ChatCompletionResponseMessageAnnotation")]
 public partial class ChatMessageAnnotation
 {
@@ -18,7 +17,7 @@ public partial class ChatMessageAnnotation
     [CodeGenMember("UrlCitation")]
     internal InternalChatCompletionResponseMessageAnnotationUrlCitation UrlCitation { get; }
 
-    [CodeGenMember("Type")]
-    internal InternalChatCompletionResponseMessageAnnotationType Type { get; } = "url_citation";
-
+    // CUSTOM: Made internal
+    [CodeGenMember("Kind")]
+    internal string Kind { get; } = "url_citation";
 }

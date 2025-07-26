@@ -17,8 +17,8 @@ namespace OpenAI.Moderations;
 /// <summary> The service client for OpenAI moderation operations. </summary>
 [CodeGenType("Moderations")]
 [CodeGenSuppress("ModerationClient", typeof(ClientPipeline), typeof(Uri))]
-[CodeGenSuppress("CreateModerationAsync", typeof(ModerationOptions), typeof(CancellationToken))]
-[CodeGenSuppress("CreateModeration", typeof(ModerationOptions), typeof(CancellationToken))]
+[CodeGenSuppress("ClassifyTextAsync", typeof(ModerationOptions), typeof(CancellationToken))]
+[CodeGenSuppress("ClassifyText", typeof(ModerationOptions), typeof(CancellationToken))]
 public partial class ModerationClient
 {
     private readonly string _model;
@@ -101,9 +101,9 @@ public partial class ModerationClient
         ModerationOptions options = new();
         CreateModerationOptions(input, ref options);
 
-        using BinaryContent content = options;
+        using BinaryContent content = options.ToBinaryContent();
         ClientResult result = await ClassifyTextAsync(content, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        return ClientResult.FromValue(((ModerationResultCollection)result).FirstOrDefault(), result.GetRawResponse());
+        return ClientResult.FromValue(ModerationResultCollection.FromClientResult(result).FirstOrDefault(), result.GetRawResponse());
     }
 
     /// <summary> Classifies if the text input is potentially harmful across several categories. </summary>
@@ -118,9 +118,9 @@ public partial class ModerationClient
         ModerationOptions options = new();
         CreateModerationOptions(input, ref options);
 
-        using BinaryContent content = options;
+        using BinaryContent content = options.ToBinaryContent();
         ClientResult result = ClassifyText(content, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(((ModerationResultCollection)result).FirstOrDefault(), result.GetRawResponse());
+        return ClientResult.FromValue(ModerationResultCollection.FromClientResult(result).FirstOrDefault(), result.GetRawResponse());
     }
 
     /// <summary> Classifies if the text inputs are potentially harmful across several categories. </summary>
@@ -135,9 +135,9 @@ public partial class ModerationClient
         ModerationOptions options = new();
         CreateModerationOptions(inputs, ref options);
 
-        using BinaryContent content = options;
+        using BinaryContent content = options.ToBinaryContent();
         ClientResult result = await ClassifyTextAsync(content, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        return ClientResult.FromValue((ModerationResultCollection)result, result.GetRawResponse());
+        return ClientResult.FromValue(ModerationResultCollection.FromClientResult(result), result.GetRawResponse());
     }
 
     /// <summary> Classifies if the text inputs are potentially harmful across several categories. </summary>
@@ -152,9 +152,9 @@ public partial class ModerationClient
         ModerationOptions options = new();
         CreateModerationOptions(inputs, ref options);
 
-        using BinaryContent content = options;
+        using BinaryContent content = options.ToBinaryContent();
         ClientResult result = ClassifyText(content, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue((ModerationResultCollection)result, result.GetRawResponse());
+        return ClientResult.FromValue(ModerationResultCollection.FromClientResult(result), result.GetRawResponse());
     }
 
     private void CreateModerationOptions(string input, ref ModerationOptions options)

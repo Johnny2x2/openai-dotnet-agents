@@ -1,5 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OpenAI.Responses;
 
-[CodeGenType("ResponsesResponseStreamEventResponseFileSearchCallCompleted")]
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ResponseFileSearchCallCompletedEvent")]
 public partial class StreamingResponseFileSearchCallCompletedUpdate
-{ }
+{
+}

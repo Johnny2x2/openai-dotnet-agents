@@ -1,6 +1,11 @@
-﻿namespace OpenAI.Responses;
+using System.Diagnostics.CodeAnalysis;
 
-[CodeGenType("ResponsesFileSearchToolRankingOptionsRanker")]
+namespace OpenAI.Responses;
+
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("RankingOptionsRanker")]
 public readonly partial struct FileSearchToolRanker
 {
 }

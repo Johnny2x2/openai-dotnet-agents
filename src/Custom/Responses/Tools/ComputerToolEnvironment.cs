@@ -2,8 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Responses;
 
-[CodeGenType("ResponsesComputerToolEnvironment")]
-[Experimental("OPENAICUA001")]
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ComputerUsePreviewToolEnvironment")]
 public readonly partial struct ComputerToolEnvironment
 {
 }

@@ -3,7 +3,6 @@
 #nullable disable
 
 using System;
-using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -57,6 +56,7 @@ namespace OpenAI
                 }
 #endif
             }
+            // Plugin customization: remove options.Format != "W" check
             if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
@@ -133,6 +133,7 @@ namespace OpenAI
                     parameters = BinaryData.FromString(prop.Value.GetRawText());
                     continue;
                 }
+                // Plugin customization: remove options.Format != "W" check
                 additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new InternalFunctionDefinition(description, name, strict, parameters, additionalBinaryDataProperties);
@@ -146,7 +147,7 @@ namespace OpenAI
             switch (format)
             {
                 case "J":
-                    return ModelReaderWriter.Write(this, options);
+                    return ModelReaderWriter.Write(this, options, OpenAIContext.Default);
                 default:
                     throw new FormatException($"The model {nameof(InternalFunctionDefinition)} does not support writing '{options.Format}' format.");
             }
@@ -170,21 +171,5 @@ namespace OpenAI
         }
 
         string IPersistableModel<InternalFunctionDefinition>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
-
-        public static implicit operator BinaryContent(InternalFunctionDefinition internalFunctionDefinition)
-        {
-            if (internalFunctionDefinition == null)
-            {
-                return null;
-            }
-            return BinaryContent.Create(internalFunctionDefinition, ModelSerializationExtensions.WireOptions);
-        }
-
-        public static explicit operator InternalFunctionDefinition(ClientResult result)
-        {
-            using PipelineResponse response = result.GetRawResponse();
-            using JsonDocument document = JsonDocument.Parse(response.Content);
-            return DeserializeInternalFunctionDefinition(document.RootElement, ModelSerializationExtensions.WireOptions);
-        }
     }
 }

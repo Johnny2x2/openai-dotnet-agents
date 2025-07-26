@@ -1,9 +1,9 @@
+using System.ClientModel;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.VectorStores;
 
-[Experimental("OPENAI001")]
 [CodeGenType("CreateVectorStoreRequest")]
 public partial class VectorStoreCreationOptions
 {
@@ -13,4 +13,6 @@ public partial class VectorStoreCreationOptions
 
     [CodeGenMember("ChunkingStrategy")]
     public FileChunkingStrategy ChunkingStrategy { get; set; }
+
+    internal BinaryContent ToBinaryContent() => BinaryContent.Create(this, ModelSerializationExtensions.WireOptions);
 }

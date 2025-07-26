@@ -1,7 +1,11 @@
-﻿namespace OpenAI.Responses;
+using System.Diagnostics.CodeAnalysis;
 
-// CUSTOM: Renamed.
-[CodeGenType("ResponsesError")]
+namespace OpenAI.Responses;
+
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ResponseError")]
 public partial class ResponseError
 {
 }

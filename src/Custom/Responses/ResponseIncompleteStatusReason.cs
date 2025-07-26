@@ -1,6 +1,11 @@
-﻿namespace OpenAI.Responses;
+using System.Diagnostics.CodeAnalysis;
 
-[CodeGenType("ResponsesResponseIncompleteDetailsReason")]
+namespace OpenAI.Responses;
+
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ResponseIncompleteDetailsReason")]
 public readonly partial struct ResponseIncompleteStatusReason
 {
 }

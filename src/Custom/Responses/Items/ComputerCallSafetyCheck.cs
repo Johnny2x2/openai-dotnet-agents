@@ -1,9 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.Responses;
 
-[CodeGenType("ResponsesComputerCallItemSafetyCheck")]
-[Experimental("OPENAICUA001")]
+// CUSTOM:
+// - Added Experimental attribute.
+// - Renamed.
+[CodeGenType("ComputerToolCallSafetyCheck")]
 public partial class ComputerCallSafetyCheck
 {
 }

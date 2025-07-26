@@ -15,6 +15,7 @@ It is generated from our [OpenAPI specification](https://github.com/openai/opena
   - [Namespace organization](#namespace-organization)
   - [Using the async API](#using-the-async-api)
   - [Using the `OpenAIClient` class](#using-the-openaiclient-class)
+- [How to use dependency injection](#how-to-use-dependency-injection)
 - [How to use chat completions with streaming](#how-to-use-chat-completions-with-streaming)
 - [How to use chat completions with tools and function calling](#how-to-use-chat-completions-with-tools-and-function-calling)
 - [How to use chat completions with structured outputs](#how-to-use-chat-completions-with-structured-outputs)
@@ -73,15 +74,15 @@ While you can pass your API key directly as a string, it is highly recommended t
 If you need to connect to an alternative API endpoint (for example, a proxy or self-hosted OpenAI-compatible LLM), you can specify a custom base URL and API key using the `ApiKeyCredential` and `OpenAIClientOptions`:
 
 ```csharp
-using OpenAI.Chat;
 using OpenAI;
+using OpenAI.Chat;
 
-var client = new ChatClient(
-    model: CHAT_MODEL,
-    credential: new ApiKeyCredential(Environment.GetEnvironmentVariable("API_KEY") ?? ""),
-    options: new OpenAIClientOptions
-    {
-        Endpoint = new Uri(BASE_URL),
+ChatClient client = new(
+    model: "MODEL_NAME",
+    credential: new ApiKeyCredential(Environment.GetEnvironmentVariable("OPENAI_API_KEY")),
+    options: new OpenAIClientOptions() 
+    { 
+        Endpoint = new Uri("BASE_URL")
     }
 );
 ```
@@ -92,20 +93,22 @@ Replace `CHAT_MODEL` with your model name and `BASE_URL` with your endpoint URI.
 
 The library is organized into namespaces by feature areas in the OpenAI REST API. Each namespace contains a corresponding client class.
 
-| Namespace                     | Client class                 | Notes                                                             |
-| ------------------------------|------------------------------|-------------------------------------------------------------------|
-| `OpenAI.Assistants`           | `AssistantClient`            | ![Experimental](https://img.shields.io/badge/experimental-purple) |
-| `OpenAI.Audio`                | `AudioClient`                |                                                                   |
-| `OpenAI.Batch`                | `BatchClient`                | ![Experimental](https://img.shields.io/badge/experimental-purple) |
-| `OpenAI.Chat`                 | `ChatClient`                 |                                                                   |
-| `OpenAI.Embeddings`           | `EmbeddingClient`            |                                                                   |
-| `OpenAI.FineTuning`           | `FineTuningClient`           | ![Experimental](https://img.shields.io/badge/experimental-purple) |
-| `OpenAI.Files`                | `OpenAIFileClient`           |                                                                   |
-| `OpenAI.Images`               | `ImageClient`                |                                                                   |
-| `OpenAI.Models`               | `OpenAIModelClient`          |                                                                   |
-| `OpenAI.Moderations`          | `ModerationClient`           |                                                                   |
-| `OpenAI.Responses`            | `OpenAIResponseClient`       |                                                                   |
-| `OpenAI.VectorStores`         | `VectorStoreClient`          | ![Experimental](https://img.shields.io/badge/experimental-purple) |
+| Namespace                     | Client class                 |
+| ------------------------------|------------------------------|
+| `OpenAI.Assistants`           | `AssistantClient`            |
+| `OpenAI.Audio`                | `AudioClient`                |
+| `OpenAI.Batch`                | `BatchClient`                |
+| `OpenAI.Chat`                 | `ChatClient`                 |
+| `OpenAI.Embeddings`           | `EmbeddingClient`            |
+| `OpenAI.Evals`                | `EvaluationClient`           |
+| `OpenAI.FineTuning`           | `FineTuningClient`           |
+| `OpenAI.Files`                | `OpenAIFileClient`           |
+| `OpenAI.Images`               | `ImageClient`                |
+| `OpenAI.Models`               | `OpenAIModelClient`          |
+| `OpenAI.Moderations`          | `ModerationClient`           |
+| `OpenAI.Realtime`             | `RealtimeClient`             |
+| `OpenAI.Responses`            | `OpenAIResponseClient`       |
+| `OpenAI.VectorStores`         | `VectorStoreClient`          |
 
 ### Using the async API
 
@@ -136,6 +139,45 @@ Next, to create an instance of an `AudioClient`, for example, you can call the `
 ```csharp
 AudioClient ttsClient = client.GetAudioClient("tts-1");
 AudioClient whisperClient = client.GetAudioClient("whisper-1");
+```
+
+## How to use dependency injection
+
+The OpenAI clients are **thread-safe** and can be safely registered as **singletons** in ASP.NET Core's Dependency Injection container. This maximizes resource efficiency and HTTP connection reuse.
+
+Register the `ChatClient` as a singleton in your `Program.cs`:
+
+```csharp
+builder.Services.AddSingleton<ChatClient>(serviceProvider =>
+{
+    var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+
+    return new ChatClient(apiKey);
+});
+```
+
+Then inject and use the client in your controllers or services:
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ChatController : ControllerBase
+{
+    private readonly ChatClient _chatClient;
+
+    public ChatController(ChatClient chatClient)
+    {
+        _chatClient = chatClient;
+    }
+
+    [HttpPost("complete")]
+    public async Task<IActionResult> CompleteChat([FromBody] string message)
+    {
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(message);
+        
+        return Ok(new { response = completion.Content[0].Text });
+    }
+}
 ```
 
 ## How to use chat completions with streaming
